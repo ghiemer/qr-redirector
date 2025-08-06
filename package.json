@@ -3,11 +3,33 @@
   "version": "2.1.0",
   "description": "Professional QR Code URL Redirector with Admin Panel, Click Tracking and Analytics",
   "main": "app.js",
-  "author": "QR-Redirector Team",
+  "author": "QR-Redirector Contributors",
   "license": "MIT",
-  "keywords": ["qr", "redirector", "url-shortener", "analytics", "tracking", "admin-panel"],
+  "homepage": "https://github.com/ghiemer/qr-redirector#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ghiemer/qr-redirector.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ghiemer/qr-redirector/issues"
+  },
+  "keywords": [
+    "qr-code",
+    "url-redirector", 
+    "url-shortener",
+    "analytics",
+    "tracking",
+    "admin-panel",
+    "nodejs",
+    "express",
+    "mariadb",
+    "mysql",
+    "privacy",
+    "gdpr"
+  ],
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
   },
   "scripts": {
     "start": "NODE_ENV=production node app.js",
