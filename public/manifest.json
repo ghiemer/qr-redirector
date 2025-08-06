@@ -1,0 +1,17 @@
+{
+  "name": "QR-Redirector Admin",
+  "short_name": "QR Admin",
+  "description": "QR Code Management System",
+  "start_url": "/admin/dashboard",
+  "display": "standalone",
+  "background_color": "#f7f7f9",
+  "theme_color": "#276ef1",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,510 @@
+<%- include('layout-header') %>
+<style>
+  .settings-container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .settings-section {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .settings-section h3 {
+    margin-top: 0;
+    color: #495057;
+    border-bottom: 2px solid #f8f9fa;
+    padding-bottom: 10px;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #495057;
+  }
+  
+  .form-group input, .form-group select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  
+  .form-group input:focus, .form-group select:focus {
+    outline: none;
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  }
+  
+  .checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .checkbox-group input[type="checkbox"] {
+    width: auto;
+  }
+  
+  .security-section {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+  }
+  
+  .security-section h4 {
+    color: #856404;
+    margin-top: 0;
+  }
+  
+  .security-input {
+    background: #f8f9fa;
+    border: 2px solid #dc3545;
+  }
+  
+  .security-input:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+  }
+  
+  .btn-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  .btn-secondary {
+    background: #6c757d;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    text-decoration: none;
+    display: inline-block;
+  }
+  
+  .btn-secondary:hover {
+    background: #5a6268;
+    color: white;
+    text-decoration: none;
+  }
+  
+  .alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+  }
+  
+  .alert-success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+  }
+  
+  .alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+  }
+  
+  .help-text {
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 5px;
+  }
+  
+  .otp-section {
+    background: #e7f3ff;
+    border: 1px solid #b3d7ff;
+    border-radius: 4px;
+    padding: 15px;
+    margin: 10px 0;
+  }
+  
+  .navigation {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+  
+  .navigation a {
+    margin-right: 15px;
+    text-decoration: none;
+    color: #007bff;
+  }
+  
+  .navigation a:hover {
+    text-decoration: underline;
+  }
+  
+  .navigation a.active {
+    font-weight: bold;
+    color: #495057;
+  }
+  
+  .hidden {
+    display: none;
+  }
+</style>
+
+<div class="settings-container">
+  <div class="navigation">
+    <a href="/admin/dashboard">📊 Dashboard</a>
+    <a href="/admin/routes/new">➕ Neue Route</a>
+    <a href="/admin/settings" class="active">⚙️ Einstellungen</a>
+    <a href="#" onclick="logout()">🚪 Logout</a>
+  </div>
+
+  <h1>⚙️ System-Einstellungen</h1>
+  
+  <% if (error) { %>
+    <div class="alert alert-danger">
+      <strong>Fehler:</strong> <%= error %>
+    </div>
+  <% } %>
+  
+  <% if (success) { %>
+    <div class="alert alert-success">
+      <strong>Erfolg:</strong> <%= success %>
+    </div>
+  <% } %>
+
+  <form method="POST" id="settingsForm" data-2fa-enabled="<%= settings.twoFactorEnabled %>">
+    
+    <!-- Website-Einstellungen -->
+    <div class="settings-section">
+      <h3>🌐 Website-Einstellungen</h3>
+      
+      <div class="form-group">
+        <label for="defaultRedirectUrl">Standard-Weiterleitung bei Aufruf der Hauptdomain:</label>
+        <input type="url" 
+               id="defaultRedirectUrl" 
+               name="defaultRedirectUrl" 
+               value="<%= settings.defaultRedirectUrl %>"
+               placeholder="https://example.com">
+        <div class="help-text">
+          Wenn leer: 404-Fehlerseite wird angezeigt. Wenn gesetzt: Automatische Weiterleitung zu dieser URL.
+        </div>
+      </div>
+    </div>
+
+    <!-- Datenbank-Einstellungen -->
+    <div class="settings-section">
+      <h3>🗄️ Datenbank-Einstellungen</h3>
+      
+      <div class="form-group">
+        <label for="dbType">Datenbank-Typ:</label>
+        <select id="dbType" name="dbType" onchange="toggleDbSettings()">
+          <option value="json" <%= settings.dbType === 'json' ? 'selected' : '' %>>JSON (Datei-basiert)</option>
+          <option value="mariadb" <%= settings.dbType === 'mariadb' ? 'selected' : '' %>>MariaDB</option>
+        </select>
+      </div>
+      
+      <div id="mariadbSettings" class="<%= settings.dbType === 'json' ? 'hidden' : '' %>">
+        <div class="form-group">
+          <label for="dbHost">Host:</label>
+          <input type="text" id="dbHost" name="dbHost" value="<%= settings.dbHost %>">
+        </div>
+        
+        <div class="form-group">
+          <label for="dbPort">Port:</label>
+          <input type="number" id="dbPort" name="dbPort" value="<%= settings.dbPort %>">
+        </div>
+        
+        <div class="form-group">
+          <label for="dbName">Datenbank-Name:</label>
+          <input type="text" id="dbName" name="dbName" value="<%= settings.dbName %>">
+        </div>
+        
+        <div class="form-group">
+          <label for="dbUser">Benutzer:</label>
+          <input type="text" id="dbUser" name="dbUser" value="<%= settings.dbUser %>">
+        </div>
+        
+        <div class="form-group">
+          <label for="dbPassword">Passwort:</label>
+          <input type="password" id="dbPassword" name="dbPassword" placeholder="Leer lassen um nicht zu ändern">
+          <div class="help-text">Nur ausfüllen wenn Passwort geändert werden soll.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SMTP-Einstellungen -->
+    <div class="settings-section">
+      <h3>📧 E-Mail-Einstellungen (SMTP)</h3>
+      
+      <div class="checkbox-group">
+        <input type="checkbox" 
+               id="smtpEnabled" 
+               name="smtpEnabled" 
+               <%= settings.smtpEnabled ? 'checked' : '' %>
+               onchange="toggleSmtpSettings()">
+        <label for="smtpEnabled">E-Mail-Versand aktivieren</label>
+      </div>
+      
+      <div id="smtpSettings" class="<%= !settings.smtpEnabled ? 'hidden' : '' %>">
+        <div class="form-group">
+          <label for="smtpHost">SMTP-Server:</label>
+          <input type="text" id="smtpHost" name="smtpHost" value="<%= settings.smtpHost %>">
+        </div>
+        
+        <div class="form-group">
+          <label for="smtpPort">Port:</label>
+          <input type="number" id="smtpPort" name="smtpPort" value="<%= settings.smtpPort %>">
+        </div>
+        
+        <div class="form-group">
+          <label for="smtpUser">E-Mail-Adresse:</label>
+          <input type="email" id="smtpUser" name="smtpUser" value="<%= settings.smtpUser %>">
+        </div>
+        
+        <div class="form-group">
+          <label for="smtpPassword">E-Mail-Passwort:</label>
+          <input type="password" id="smtpPassword" name="smtpPassword" placeholder="Leer lassen um nicht zu ändern">
+          <div class="help-text">Nur ausfüllen wenn Passwort geändert werden soll.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sicherheits-Einstellungen -->
+    <div class="settings-section">
+      <h3>🔐 Sicherheits-Einstellungen</h3>
+      
+      <div class="checkbox-group">
+        <input type="checkbox" 
+               id="twoFactorEnabled" 
+               name="twoFactorEnabled" 
+               <%= settings.twoFactorEnabled ? 'checked' : '' %>>
+        <label for="twoFactorEnabled">Zwei-Faktor-Authentifizierung (2FA) aktivieren</label>
+      </div>
+      <div class="help-text">
+        Deaktivierung von 2FA verringert die Sicherheit erheblich!
+      </div>
+    </div>
+
+    <!-- Click Counter Einstellungen -->
+    <div class="settings-section">
+      <h3>📊 Click Counter</h3>
+      
+      <div class="checkbox-group">
+        <input type="checkbox" 
+               id="clickCounterEnabled" 
+               name="clickCounterEnabled" 
+               <%= settings.clickCounterEnabled ? 'checked' : '' %>>
+        <label for="clickCounterEnabled">Klick-Counter aktivieren</label>
+      </div>
+      
+      <div class="help-text">
+        Aktiviert die Zählung von Klicks auf QR-Codes. Alle Daten werden pseudonymisiert gespeichert.
+        Mehrfache Scans derselben Person werden erkannt und nur einmal gezählt.
+        <br><strong>Bei Deaktivierung:</strong> Es werden überhaupt keine Klick-Daten erfasst.
+      </div>
+    </div>
+
+    <!-- Logging Einstellungen -->
+    <div class="settings-section">
+      <h3>📝 Vollständiges Logging</h3>
+      
+      <div class="checkbox-group">
+        <input type="checkbox" 
+               id="loggingEnabled" 
+               name="loggingEnabled" 
+               <%= settings.loggingEnabled ? 'checked' : '' %>>
+        <label for="loggingEnabled">Detailliertes Logging aktivieren</label>
+      </div>
+      
+      <div class="form-group">
+        <label for="logRetentionDays">Log-Aufbewahrung (Tage):</label>
+        <input type="number" 
+               id="logRetentionDays" 
+               name="logRetentionDays" 
+               min="1" 
+               max="365" 
+               value="<%= settings.logRetentionDays %>">
+        <div class="help-text">Anzahl Tage, für die Log-Dateien aufbewahrt werden (1-365).</div>
+      </div>
+      
+      <div class="help-text">
+        Loggt alle Weiterleitungen mit Timestamp in tägliche Log-Dateien. 
+        Alle Daten werden pseudonymisiert gespeichert. Alte Logs werden automatisch bereinigt.
+        <br><strong>Bei Deaktivierung:</strong> Es wird überhaupt nichts geloggt.
+      </div>
+    </div>
+
+    <!-- Sicherheits-Bestätigung -->
+    <div class="security-section">
+      <h4>🔒 Sicherheits-Bestätigung</h4>
+      <p>Aus Sicherheitsgründen müssen Einstellungsänderungen bestätigt werden:</p>
+      
+      <div class="form-group">
+        <label for="password">Dein Admin-Passwort:</label>
+        <input type="password" 
+               id="password" 
+               name="password" 
+               class="security-input" 
+               required
+               placeholder="Aktuelles Passwort eingeben">
+      </div>
+      
+      <div id="twoFactorSection" class="<%= !settings.twoFactorEnabled ? 'hidden' : '' %>">
+        <div class="otp-section">
+          <p><strong>2FA-Bestätigung erforderlich:</strong></p>
+          <button type="button" onclick="requestOtp()" class="btn-secondary">
+            📱 2FA-Code anfordern
+          </button>
+          <div id="otpMessage" style="margin-top: 10px;"></div>
+        </div>
+        
+        <div class="form-group">
+          <label for="twoFactorCode">2FA-Code:</label>
+          <input type="text" 
+                 id="twoFactorCode" 
+                 name="twoFactorCode" 
+                 class="security-input"
+                 placeholder="6-stelliger Code"
+                 maxlength="6">
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <button type="submit">💾 Einstellungen speichern</button>
+      <a href="/admin/dashboard" class="btn-secondary">Abbrechen</a>
+    </div>
+  </form>
+  
+  <!-- Management Aktionen -->
+  <div class="settings-section" style="margin-top: 40px; border-top: 2px solid #dee2e6; padding-top: 30px;">
+    <h3>🛠️ Management-Aktionen</h3>
+    
+    <!-- Counter zurücksetzen -->
+    <div style="margin-bottom: 20px; padding: 15px; background-color: #fff3cd; border: 1px solid #ffeaa7; border-radius: 5px;">
+      <h4 style="color: #856404; margin-bottom: 10px;">⚠️ Klick-Counter zurücksetzen</h4>
+      <p style="color: #856404; margin-bottom: 15px;">
+        Setzt alle Klick-Counter für alle QR-Codes auf Null zurück. Diese Aktion kann nicht rückgängig gemacht werden.
+      </p>
+      
+      <form method="post" action="/admin/settings/reset-counters" style="display: inline;">
+        <input type="password" 
+               name="password" 
+               placeholder="Passwort zur Bestätigung" 
+               style="margin-right: 10px; padding: 8px; border: 1px solid #ccc; border-radius: 3px;"
+               required>
+        <button type="submit" 
+                class="btn-secondary" 
+                onclick="return confirm('Alle Klick-Counter wirklich zurücksetzen? Diese Aktion kann nicht rückgängig gemacht werden!')">
+          🔄 Counter zurücksetzen
+        </button>
+      </form>
+    </div>
+    
+    <!-- Logs bereinigen -->
+    <div style="margin-bottom: 20px; padding: 15px; background-color: #d1ecf1; border: 1px solid #bee5eb; border-radius: 5px;">
+      <h4 style="color: #0c5460; margin-bottom: 10px;">🧹 Log-Dateien bereinigen</h4>
+      <p style="color: #0c5460; margin-bottom: 15px;">
+        Bereinigt alte Log-Dateien basierend auf der konfigurierten Aufbewahrungszeit.
+      </p>
+      
+      <form method="post" action="/admin/settings/cleanup-logs" style="display: inline;">
+        <input type="password" 
+               name="password" 
+               placeholder="Passwort zur Bestätigung" 
+               style="margin-right: 10px; padding: 8px; border: 1px solid #ccc; border-radius: 3px;"
+               required>
+        <button type="submit" 
+                class="btn-secondary" 
+                onclick="return confirm('Alte Log-Dateien bereinigen?')">
+          🗑️ Logs bereinigen
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleDbSettings() {
+  const dbType = document.getElementById('dbType').value;
+  const mariadbSettings = document.getElementById('mariadbSettings');
+  if (dbType === 'mariadb') {
+    mariadbSettings.classList.remove('hidden');
+  } else {
+    mariadbSettings.classList.add('hidden');
+  }
+}
+
+function toggleSmtpSettings() {
+  const smtpEnabled = document.getElementById('smtpEnabled').checked;
+  const smtpSettings = document.getElementById('smtpSettings');
+  if (smtpEnabled) {
+    smtpSettings.classList.remove('hidden');
+  } else {
+    smtpSettings.classList.add('hidden');
+  }
+}
+
+function requestOtp() {
+  fetch('/admin/settings/otp', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    const messageDiv = document.getElementById('otpMessage');
+    if (data.success) {
+      messageDiv.innerHTML = '<div style="color: #155724; background: #d4edda; padding: 8px; border-radius: 4px;">' + data.message + '</div>';
+    } else {
+      messageDiv.innerHTML = '<div style="color: #721c24; background: #f8d7da; padding: 8px; border-radius: 4px;">' + data.message + '</div>';
+    }
+  })
+  .catch(error => {
+    document.getElementById('otpMessage').innerHTML = '<div style="color: #721c24; background: #f8d7da; padding: 8px; border-radius: 4px;">Fehler beim Anfordern des 2FA-Codes</div>';
+  });
+}
+
+function logout() {
+  if (confirm('Möchtest du dich wirklich abmelden?')) {
+    fetch('/admin/logout', { method: 'POST' })
+      .then(() => window.location.href = '/admin/login');
+  }
+}
+
+// Form Validation
+document.getElementById('settingsForm').addEventListener('submit', function(e) {
+  const password = document.getElementById('password').value;
+  const twoFactorEnabled = document.getElementById('settingsForm').dataset.twoFaEnabled === 'true';
+  const twoFactorCode = document.getElementById('twoFactorCode').value;
+  
+  if (!password) {
+    alert('Passwort ist erforderlich!');
+    e.preventDefault();
+    return;
+  }
+  
+  if (twoFactorEnabled && !twoFactorCode) {
+    alert('2FA-Code ist erforderlich!');
+    e.preventDefault();
+    return;
+  }
+  
+  if (!confirm('Einstellungen wirklich speichern? Dies kann einen Server-Neustart erfordern.')) {
+    e.preventDefault();
+  }
+});
+</script>
+
+<%- include('layout-footer') %>
