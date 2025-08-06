@@ -6,7 +6,15 @@ A professional, production-ready QR Code URL redirector with comprehensive admin
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Production Ready](https://img.shields.io/badge/Status-Production%20Ready-success)](https://github.com/ghiemer/qr-redirector)
 
+## 📸 Screenshots
+
+### Admin Login Interface
+![Login Screen](Screenshot_LoginScreen.png)
+*Secure admin login with optional 2FA authentication*
+
 ## ✨ Features
+
+
 
 ### 🔗 Core Functionality
 - **QR Code Generation**: Automatic PNG & SVG generation with custom styling

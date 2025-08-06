@@ -13,6 +13,7 @@ const { show404 } = require('./controllers/errorController.js');
 const routeService = require('./services/routeService.js');
 const { validateLogin, issueSecondFactor, verifySecondFactor } = require('./lib/auth.js');
 const { initializeDatabase } = require('./lib/db.js');
+const debugLogger = require('./lib/debug.js');
 
 const app = express();
 
