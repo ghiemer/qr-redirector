@@ -227,6 +227,14 @@ This provides colored console output with detailed information about:
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+## ⚠️ Legal Disclaimer
+
+**GDPR/DSGVO Compliance**: While this software implements privacy-first tracking with SHA256 hashing and pseudonymization features, **no guarantee or warranty is provided regarding GDPR/DSGVO compliance**. Users are responsible for ensuring their specific use case and configuration meets all applicable legal requirements.
+
+**No Legal Advice**: This software and its documentation do not constitute legal advice. For specific legal requirements regarding data protection, privacy laws, or regulatory compliance, please consult with qualified legal professionals.
+
+**Use at Your Own Risk**: The software is provided "as is" without warranty of any kind. Users assume full responsibility for compliance with all applicable laws and regulations in their jurisdiction.
+
 ## 🙏 Acknowledgments
 
 - QR code generation powered by community libraries
