@@ -1,0 +1,166 @@
+<%- include('layout-header') %>
+<style>
+  .warning-box {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    color: #856404;
+  }
+  
+  .danger-box {
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    color: #721c24;
+  }
+  
+  .route-info {
+    background: #e9ecef;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 15px 0;
+  }
+  
+  .confirm-input {
+    font-family: monospace;
+    font-size: 14px;
+    padding: 10px;
+    width: 100%;
+    margin: 10px 0;
+    border: 2px solid #dc3545;
+    border-radius: 4px;
+  }
+  
+  .cancel-btn {
+    background: #6c757d;
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    margin-right: 10px;
+  }
+  
+  .delete-btn {
+    background: #dc3545;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .delete-btn:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+  }
+  
+  .navigation {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+  .navigation a {
+    margin-right: 15px;
+    text-decoration: none;
+    color: #007bff;
+  }
+  .navigation a:hover {
+    text-decoration: underline;
+  }
+  .navigation a.active {
+    font-weight: bold;
+    color: #495057;
+  }
+</style>
+
+<div class="navigation">
+  <a href="/admin/dashboard">📊 Dashboard</a>
+  <a href="/admin/routes/new">➕ Neue Route</a>
+  <% if (user && user.email === 'admin@otmarkastner.com') { %>
+  <a href="/admin/settings">⚙️ Einstellungen</a>
+  <% } %>
+  <a href="#" onclick="logout()">🚪 Logout</a>
+</div>
+
+<h1>🗑️ Route löschen</h1>
+
+<div class="danger-box">
+  <strong>⚠️ WARNUNG:</strong> Diese Aktion kann nicht rückgängig gemacht werden!
+</div>
+
+<div class="route-info">
+  <h3>Route die gelöscht wird:</h3>
+  <p><strong>ID:</strong> <code><%= route.id %></code></p>
+  <p><strong>Alias:</strong> <code><%= route.alias %></code></p>
+  <p><strong>Ziel:</strong> <code><%= route.target %></code></p>
+  <% if (route.utm_source || route.utm_medium || route.utm_campaign) { %>
+    <p><strong>UTM-Parameter:</strong></p>
+    <ul>
+      <% if (route.utm_source) { %><li>Source: <code><%= route.utm_source %></code></li><% } %>
+      <% if (route.utm_medium) { %><li>Medium: <code><%= route.utm_medium %></code></li><% } %>
+      <% if (route.utm_campaign) { %><li>Campaign: <code><%= route.utm_campaign %></code></li><% } %>
+    </ul>
+  <% } %>
+</div>
+
+<div class="warning-box">
+  <h3>Was wird gelöscht:</h3>
+  <ul>
+    <li>✅ Route-Daten aus der Datenbank</li>
+    <li>✅ QR-Code PNG-Datei (<code><%= route.id %>.png</code>)</li>
+    <li>✅ QR-Code SVG-Datei (<code><%= route.id %>.svg</code>)</li>
+    <li>⚠️ Alle Tracking-Daten zu dieser Route</li>
+  </ul>
+</div>
+
+<% if (typeof error !== 'undefined' && error) { %>
+  <div class="danger-box">
+    <strong>Fehler:</strong> <%= error %>
+  </div>
+<% } %>
+
+<form method="POST">
+  <p><strong>Um das Löschen zu bestätigen, gib den folgenden Text ein:</strong></p>
+  <p style="font-family: monospace; font-size: 16px; font-weight: bold; color: #dc3545;">DELETE-<%= route.alias %></p>
+  
+  <input 
+    type="text" 
+    name="confirmText" 
+    class="confirm-input"
+    placeholder="DELETE-<%= route.alias %>"
+    required
+    autocomplete="off"
+  >
+  
+  <div style="margin-top: 20px;">
+    <a href="/admin/dashboard" class="cancel-btn">Abbrechen</a>
+    <button type="submit" class="delete-btn">Endgültig löschen</button>
+  </div>
+</form>
+
+<script>
+  // Enable delete button only when correct text is entered
+  const input = document.querySelector('.confirm-input');
+  const button = document.querySelector('.delete-btn');
+  const requiredText = 'DELETE-<%= route.alias %>';
+  
+  button.disabled = true;
+  
+  input.addEventListener('input', function() {
+    button.disabled = this.value !== requiredText;
+  });
+
+  function logout() {
+    if (confirm('Möchtest du dich wirklich abmelden?')) {
+      fetch('/admin/logout', { method: 'POST' })
+        .then(() => window.location.href = '/admin/login');
+    }
+  }
+</script>
+
+<%- include('layout-footer') %>

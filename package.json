@@ -1,0 +1,44 @@
+{
+  "name": "qr-redirector",
+  "version": "2.1.0",
+  "description": "Professional QR Code URL Redirector with Admin Panel, Click Tracking and Analytics",
+  "main": "app.js",
+  "author": "QR-Redirector Team",
+  "license": "MIT",
+  "keywords": [
+    "qr",
+    "redirector",
+    "url-shortener",
+    "analytics",
+    "tracking",
+    "admin-panel"
+  ],
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "scripts": {
+    "start": "NODE_ENV=production node app.js",
+    "dev": "DEBUG=true node app.js",
+    "start:mariadb": "NODE_ENV=production DB_TYPE=mariadb node app.js",
+    "dev:mariadb": "DEBUG=true DB_TYPE=mariadb node app.js",
+    "migrate": "node migrate.js",
+    "install-production": "npm ci --only=production",
+    "deploy": "./deploy.sh",
+    "hash-admin": "node generate-admin-hash.js",
+    "create-user": "node create-user.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "chalk": "^4.0.0",
+    "dotenv": "^10.0.0",
+    "ejs": "^3.0.0",
+    "express": "^4.17.0",
+    "express-session": "^1.17.0",
+    "fs-extra": "^10.0.0",
+    "mysql2": "^3.14.3",
+    "node-fetch": "^2.6.0",
+    "nodemailer": "^6.7.0",
+    "qrcode": "^1.4.0",
+    "uuid": "^8.3.0"
+  }
+}
